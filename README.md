@@ -1,4 +1,4 @@
-# Minimal repro of Bun/Elysia ReactQuery module issue
+# Minimal repro of Bun dev server ReactQuery module issue
 
 Minimal reproduction of an issue where it _seems like_ something in the HMR pipeline is causing `@tanstack/react-query` imports to have `undefined` values.
 
@@ -18,4 +18,4 @@ If you pause in devtools before this issue is encountered, you'll see that the i
 
 This seems to happen after a _hard refresh_, not after a client-side HMR swap.
 
-I'm not sure if this is unique to React Query but that's where I've encountered it (and reproduced it here). I'm not sure if it's an issue with Elysia or with Bun. …or with React Query (but I doubt it)!
+I'm not sure if this is unique to React Query but that's where I've encountered it (and reproduced it here).

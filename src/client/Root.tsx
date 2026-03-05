@@ -14,7 +14,7 @@ export default function Root() {
 
   return (
     <div>
-      <h1>Bun/Elysia Module Issue Repro</h1>
+      <h1>Bun Module Issue Repro</h1>
       <p>Data: {JSON.stringify(data)}</p>
     </div>
   );
