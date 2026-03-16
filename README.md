@@ -1,6 +1,17 @@
-# Minimal repro of Bun dev server ReactQuery module issue
+# Minimal repro of Bun barrel exports issue with Chakra-UI
 
-Minimal reproduction of an issue where it _seems like_ something in the HMR pipeline is causing `@tanstack/react-query` imports to have `undefined` values.
+Minimal reproduction of an issue where barrel exports inside Chakra-UI break both dev and production builds, in Bun `1.3.11-canary.1+d50ab984c`, which should (?) have the fixes introduced in [#27524](https://github.com/oven-sh/bun/pull/27524).
+
+## Setup
+
+I installed `@chakra-ui/react` and `@chakra-ui/cli`; then I ran:
+
+```sh
+$ bunx chakra snippet add toaster --outdir src/client/components/ui
+$ bunx chakra snippet add provider --outdir src/client/components/ui
+```
+
+Then I inserted these generated components into App.tsx.
 
 ## To reproduce
 
@@ -10,12 +21,19 @@ To start the server:
 bun dev
 ```
 
-It's a little bit tricky to consistently reproduce but if you just mess around with the code (client or server) and then reload the page in the browser, it will generally show up if not after the first refresh than within a few modifications/refreshes:
+Open the browser at the given URL (e.g. <localhost:4000>):
 
-![Screenshot of issue: "Runtime Error: TypeError: import_react_query.QueryClient is not a constructor"](./example.png)
+![Screenshot of issue: "Runtime Error: TypeError: You are trying to create a styled element with an undefined component. You may have forgotten to import it."](./example.png)
 
-If you pause in devtools before this issue is encountered, you'll see that the import (`import_react_query` in the screenshot) _exists, and `QueryClient` (for example) exists on it, but is `undefined`.
+This happens immediately when the server is visited, no HMR needed. If you go into `src/client/components/ui/toaster.tsx` and save the file (`touch` doesn't do it, for whatever reason), HMR will reload the component and the page will render without errors.
 
-This seems to happen after a _hard refresh_, not after a client-side HMR swap.
+### Production
 
-I'm not sure if this is unique to React Query but that's where I've encountered it (and reproduced it here).
+You can also reproduce this in production:
+
+```sh
+bun run build
+bun run serve
+```
+
+Visit the URL shown, e.g. <localhost:4000>, and you won't see the Bun error screen, which is dev-only, but if you look in your browser's console, you should see `Uncaught ReferenceError: ToastRoot2 is not defined`.

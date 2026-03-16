@@ -15,7 +15,7 @@ Bun.serve({
       );
       return Response.json({ message: "Hello from the API!" });
     },
-    "/*": index,
+    "/": index,
   },
 });
 
